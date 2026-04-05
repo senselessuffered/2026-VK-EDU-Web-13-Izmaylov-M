@@ -1,18 +1,18 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AskPupkin · New Questions</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AskPupkin · Sign Up</title>
     <link rel="icon" type="image/svg" href="static/img/favicon.svg">
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/style.css">
 </head>
 
 <body class="bg-dark text-white d-flex flex-column min-vh-100">
+
 <header class="bg-black border-bottom py-3">
     <div class="container d-flex align-items-center flex-wrap gap-2">
-        <img src="static/img/avatar-default.jpg" class="rounded-circle" width="48" height="48" alt="">
         <a href="index.html" class="text-decoration-none text-white fs-4 fw-bold">
             AskPupkin
         </a>
@@ -37,73 +37,45 @@
 </header>
 
 <main class="container my-4 flex-grow-1">
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            <h1 class="h3 fw-bold mb-4">Новые вопросы</h1>
+    <div class="row justify-content-center">
 
-            <article class="card bg-dark border-secondary mb-4 p-3">
-                <div class="d-flex flex-column flex-md-row gap-3">
-                    <img src="static/img/avatar-default.jpg" class="rounded-circle" width="48" height="48" alt="">
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a href="question.html" class="text-white text-decoration-none">
-                                ЧТО такое
-                            </a>
-                        </h2>
-                        <p class="text-white-50 mb-2">ОКАК?</p>
+        <div class="col-12 col-lg-7">
 
-                        <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
-                            <span>2 часа назад</span>
-                            <span class="badge text-bg-secondary">122</span>
-                            <span class="badge text-bg-secondary">221</span>
-                            <span class="badge text-bg-success">3 ответа</span>
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
+
+                    <h1 class="h3 mb-3 text-white">Создать аккаунт</h1>
+
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Имя пользователя</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" required placeholder="Username">
                         </div>
-                    </div>
-                </div>
-            </article>
 
-            <article class="card bg-dark border-secondary mb-4 p-3">
-                <div class="d-flex flex-column flex-md-row gap-3">
-                    <img src="static/img/avatar-default.jpg" class="rounded-circle" width="48" height="48" alt="">
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a href="question.html" class="text-white text-decoration-none">
-                                Почему не работает мой SQL-запрос?
-                            </a>
-                        </h2>
-                        <p class="text-white-50 mb-2">
-                            Пытаюсь сделать выборку с JOIN и группировкой.
-                        </p>
-
-                        <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
-                            <span>1 день назад</span>
-                            <span class="badge text-bg-secondary">sql</span>
-                            <span class="badge text-bg-secondary">mysql</span>
-                            <span class="badge text-bg-success">5 ответов</span>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Почта</label>
+                            <input type="email" class="form-control bg-dark text-white border-secondary" required placeholder="you@example.com">
                         </div>
-                    </div>
-                </div>
-            </article>
 
-            <nav aria-label="Pagination">
-                <ul class="pagination justify-content-center mt-4">
-                    <li class="page-item disabled">
-                        <span class="page-link">Предыдущая</span>
-                    </li>
-                    <li class="page-item active">
-                        <span class="page-link">1</span>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Следующая</a>
-                    </li>
-                </ul>
-            </nav>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Пароль</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary" required placeholder="••••••••">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Зарегистрироваться</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="login.html" class="text-white-50 text-decoration-none">
+                            Уже есть аккаунт?
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
         </div>
 
         <div class="col-12 col-lg-4 mt-4 mt-lg-0">
@@ -157,6 +129,7 @@
             </div>
 
         </div>
+
     </div>
 </main>
 
