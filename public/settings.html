@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AskPupkin · New Questions</title>
+    <title>AskPupkin · Settings</title>
     <link rel="icon" type="image/svg" href="static/img/favicon.svg">
     <link rel="stylesheet" href="static/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/style.css">
@@ -22,87 +22,49 @@
         </form>
 
         <div class="d-flex align-items-center ms-auto gap-2 flex-wrap">
-            <a href="ask.html" class="btn btn-gradient">
-                Спросить
-            </a>
-            <a href="login.html" class="btn btn-outline-light">
-                Войти
-            </a>
-            <a href="signup.html" class="btn btn-success">
-                Зарегистрироваться
-            </a>
+            <a href="ask.html" class="btn btn-gradient">Спросить</a>
+            <a href="login.html" class="btn btn-outline-light">Войти</a>
+            <a href="signup.html" class="btn btn-success">Зарегистрироваться</a>
         </div>
     </div>
 </header>
 
 <main class="container my-4 flex-grow-1">
     <div class="row">
+        <h1 class="h3 fw-bold mb-4">Настройки: Пупкин А Ф</h1>
+
         <div class="col-12 col-lg-8">
-            <h1 class="h3 fw-bold mb-4">Новые вопросы</h1>
+            <div class="card bg-dark border-secondary">
+                <div class="card-body p-4">
 
-            <article class="card bg-dark border-secondary mb-4 p-3">
-                <div class="d-flex flex-column flex-md-row gap-3">
-                    <img src="static/img/avatar-default.jpg" class="rounded-circle" width="48" height="48" alt="">
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a href="question.html" class="text-white text-decoration-none">
-                                ЧТО такое
-                            </a>
-                        </h2>
-                        <p class="text-white-50 mb-2">ОКАК?</p>
-
-                        <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
-                            <span>2 часа назад</span>
-                            <span class="badge text-bg-secondary">122</span>
-                            <span class="badge text-bg-secondary">221</span>
-                            <span class="badge text-bg-success">3 ответа</span>
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Email</label>
+                            <input type="email" class="form-control bg-dark text-white border-secondary" required minlength="5" maxlength="100" placeholder="you@example.com" value="pupkin_af@mail.ru">
                         </div>
-                    </div>
-                </div>
-            </article>
 
-            <article class="card bg-dark border-secondary mb-4 p-3">
-                <div class="d-flex flex-column flex-md-row gap-3">
-                    <img src="static/img/avatar-default.jpg" class="rounded-circle" width="48" height="48" alt="">
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a href="question.html" class="text-white text-decoration-none">
-                                Почему не работает мой SQL-запрос?
-                            </a>
-                        </h2>
-                        <p class="text-white-50 mb-2">
-                            Пытаюсь сделать выборку с JOIN и группировкой.
-                        </p>
-
-                        <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
-                            <span>1 день назад</span>
-                            <span class="badge text-bg-secondary">sql</span>
-                            <span class="badge text-bg-secondary">mysql</span>
-                            <span class="badge text-bg-success">5 ответов</span>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Имя пользователя</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]+" value="pupkin_af">
                         </div>
-                    </div>
-                </div>
-            </article>
 
-            <nav aria-label="Pagination">
-                <ul class="pagination justify-content-center mt-4">
-                    <li class="page-item disabled">
-                        <span class="page-link">Предыдущая</span>
-                    </li>
-                    <li class="page-item active">
-                        <span class="page-link">1</span>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">2</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">3</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="#">Следующая</a>
-                    </li>
-                </ul>
-            </nav>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Пароль</label>
+                            <input type="password" class="form-control bg-dark text-white border-secondary" required minlength="6" maxlength="50" placeholder="••••••••">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">Аватар</label>
+                            <input type="file" class="form-control bg-dark text-white border-secondary" accept="image/*">
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Сохранить</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
         </div>
 
         <div class="col-12 col-lg-4 mt-4 mt-lg-0">

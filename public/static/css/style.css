@@ -184,3 +184,13 @@ main {
     padding-bottom: 0.8rem;
   }
 }
+
+input[type="file"]::file-selector-button {
+    background-color: #6c757d;
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 6px 12px;
+    margin-right: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
