@@ -94,8 +94,10 @@ pip freeze > requirements.txt
 
 Пример (.env.example):
 
-SECRET_KEY=wandfbeufwundubwe676767676767676767676767676
+SECRET_KEY=wandfbeufwundubwe67676767676767676767676767
+
 DEBUG=True
+
 ALLOWED_HOSTS=localhost,127.0.0.1
 
 ---
@@ -113,15 +115,19 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 
 ### Локально
 
+```
 python -m venv venv
 pip install -r requirements.txt
 python manage.py runserver
+```
 
 ---
 
 ### Docker
 
+```
 docker compose up --build
+```
 
 После запуска:
 
