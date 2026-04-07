@@ -2,40 +2,19 @@
 {% load static %}
 
 {% block content %}
-<main class="container my-4 flex-grow-1">
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            <div class="col-12 d-flex align-items-center justify-content-between mb-4">
-                <h1 class="h3 fw-bold mb-0">🔥 Горячие вопросы 🔥</h1>
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <div class="col-12 d-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 fw-bold mb-0">🔥 Горячие вопросы 🔥</h1>
 
-                <a href="{% url 'questions:index' %}" class="text-decoration-none text-white-50">
-                    Новые вопросы
-                </a>
-            </div>
-            {% for question in questions %}
-            <article class="question-card">
-                <div class="question-content">
-                    <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="48" height="48" alt="">
-                    <div class="flex-grow-1">
-                        <h2 class="h5 mb-1">
-                            <a href="question.html" class="text-white text-decoration-none">
-                               {{ question.title }}
-                            </a>
-                        </h2>
-                        <p class="text-white-50 mb-2">{{ question.text }}</p>
-
-                        <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
-                            <span>2 часа назад</span>
-                            <span class="badge text-bg-secondary">122</span>
-                            <span class="badge text-bg-secondary">221</span>
-                            <span class="badge text-bg-success">3 ответа</span>
-                        </div>
-                    </div>
-                </div>
-            </article>
-
-            {% endfor %}
-
-            {% include 'particles/pagination.html' %}
+            <a href="{% url 'questions:index' %}" class="text-decoration-none text-white-50">
+                ВSопросы
+            </a>
         </div>
+        {% for question in questions %}
+            {% include 'particles/card.html' %}
+        {% endfor %}
+
+        {% include 'particles/pagination.html' %}
+</div>
 {% endblock %}

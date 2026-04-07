@@ -5,7 +5,7 @@
         <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="48" height="48" alt="">
         <div class="flex-grow-1">
             <h2 class="h5 mb-1">
-                <a href="question.html" class="text-white text-decoration-none">
+                <a href="{% url 'questions:question' question.id %}" class="text-white text-decoration-none">
                 {{ question.title }}
                 </a>
             </h2>
@@ -13,9 +13,9 @@
 
             <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
                 <span>2 часа назад</span>
-                <span class="badge text-bg-secondary">122</span>
-                <span class="badge text-bg-secondary">221</span>
-                <span class="badge text-bg-success">3 ответа</span>
+                {% for tag in question.tags %}
+                    <span class="badge text-bg-secondary">{{ tag }}</span>
+                {% endfor %}
             </div>
         </div>
     </div>
