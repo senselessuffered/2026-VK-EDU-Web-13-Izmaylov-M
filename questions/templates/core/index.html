@@ -1,0 +1,21 @@
+﻿{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block content %}
+<main class="container my-4 flex-grow-1">
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="col-12 d-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 fw-bold mb-0">Новые вопросы</h1>
+
+                <a href="{% url 'questions:hot' %}" class="text-decoration-none text-white-50">
+                    Горячие вопросы
+                </a>
+            </div>
+            {% for question in questions %}
+                {% include 'particles/card.html' %}
+            {% endfor %}
+
+            {% include 'particles/pagination.html' %}
+        </div>
+{% endblock %}
