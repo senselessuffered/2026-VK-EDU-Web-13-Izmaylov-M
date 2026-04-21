@@ -1,0 +1,22 @@
+{% load static %}
+
+<article class="question-card">
+    <div class="question-content">
+        <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="48" height="48" alt="">
+        <div class="flex-grow-1">
+            <h2 class="h5 mb-1">
+                <a href="{% url 'questions:question' question.id %}" class="text-white text-decoration-none">
+                {{ question.title }}
+                </a>
+            </h2>
+            <p class="text-white-50 mb-2">{{ question.text }}</p>
+
+            <div class="d-flex flex-wrap gap-2 align-items-center small text-white-50">
+                <span>2 часа назад</span>
+                {% for tag in question.tags %}
+                    <span class="badge text-bg-secondary">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</article>

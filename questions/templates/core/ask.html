@@ -1,0 +1,46 @@
+﻿{% extends 'layout/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
+        <div class="card bg-dark shadow-sm border-secondary">
+            <div class="card-body p-4">
+
+                <h1 class="h3 mb-4 text-white">Задать вопрос</h1>
+
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50">Заголовок</label>
+                        <input type="text"
+                                class="form-control bg-dark text-white border-secondary"
+                                placeholder="What is your question?"
+                                maxlength="150"
+                                required minlength="1" maxlength="50">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white-50">Описание</label>
+                        <textarea class="form-control bg-dark text-white border-secondary"
+                                    rows="6"
+                                    placeholder="Опиши свою проблему..."
+                                    required minlength="10" maxlength="1000"></textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-white-50">Теги</label>
+                        <input type="text"
+                                class="form-control bg-dark text-white border-secondary"
+                                placeholder="python, django"
+                                required minlength="3" maxlength="100">
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        Опубликовать
+                    </button>
+                </form>
+            </div>
+    </div>
+</div>
+
+{% endblock %}
