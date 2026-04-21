@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AskPupkin · New Questions</title>
+    <link rel="icon" type="image/svg" href="{% static 'img/favicon.svg' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body class="bg-dark text-white d-flex flex-column min-vh-100">
+<header class="bg-black border-bottom py-3">
+    <div class="container d-flex align-items-center flex-wrap gap-2">
+        <a href="{% url 'questions:index' %}" class="text-decoration-none text-white fs-4 fw-bold">
+            AskPupkin
+        </a>
+
+        <form class="d-flex flex-grow-1 header-search-form">
+            <input type="text" class="form-control me-2" placeholder="Найти вопросы...">
+            <button class="btn btn-outline-light">Поиск</button>
+        </form>
+
+        <div class="d-flex align-items-center ms-auto gap-2 flex-wrap">
+            <a href="{% url 'questions:ask' %}" class="btn btn-gradient">
+                Спросить
+            </a>
+            <a href="{% url 'core:login' %}" class="btn btn-outline-light">
+                Войти
+            </a>
+            <a href="{% url 'core:signup' %}" class="btn btn-success">
+                Зарегистрироваться
+            </a>
+        </div>
+    </div>
+</header>
+
+<main class="container my-4 flex-grow-1">
+{% block content %}
+{% endblock %}
+    <div class="col-12 col-lg-4 mt-4 mt-lg-0">
+        <div class="card-dark mb-4">
+            <div class="card-header-dark">
+                <h5 class="mb-0 text-white">Популярные теги</h5>
+            </div>
+            <div class="card-body">
+                <div class="tags-container">
+                    <a href="#" class="badge text-bg-primary">python</a>
+                    <a href="#" class="badge text-bg-success">django</a>
+                    <a href="#" class="badge text-bg-warning text-dark">javascript</a>
+                    <a href="#" class="badge text-bg-danger">html</a>
+                    <a href="#" class="badge text-bg-info text-dark">css</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-dark">
+            <div class="card-header-dark">
+                <h5 class="text-white mb-0">Лучшие участники</h5>
+            </div>
+            <div class="card-body">
+                <div class="user-item">
+                    <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle me-3" width="40" height="40" alt="">
+                    <div>
+                        <div class="fw-semibold text-white">Mr. Freeman</div>
+                        <small class="text-white-50">1245 points</small>
+                    </div>
+                </div>
+
+                <div class="user-item">
+                    <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle me-3" width="40" height="40" alt="">
+                    <div>
+                        <div class="fw-semibold text-white">Dr. House</div>
+                        <small class="text-white-50">987 points</small>
+                    </div>
+                </div>
+
+                <div class="user-item">
+                    <img src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle me-3" width="40" height="40" alt="">
+                    <div>
+                        <div class="fw-semibold text-white">Bender</div>
+                        <small class="text-white-50">777 points</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-black border-top py-3 mt-auto">
+    <div class="container text-center">
+        <small class="text-white-50">REL© 2026</small>
+    </div>
+</footer>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
