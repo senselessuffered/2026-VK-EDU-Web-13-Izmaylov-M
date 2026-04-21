@@ -13,9 +13,8 @@ for i in range(1,50):
   })
 
 def pagination(request, questions):
-    page_number = int(request.GET.get('page', 1))
-    page = Paginator(questions, 10)
-    page_obj = page.page(page_number)
+    paginator = Paginator(questions, 10)
+    page_obj = paginator.get_page(request.GET.get('page'))
     return page_obj
 
 def ask(request):
