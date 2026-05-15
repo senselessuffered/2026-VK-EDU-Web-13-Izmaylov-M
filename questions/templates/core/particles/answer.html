@@ -1,29 +1,29 @@
 {% load static %}
 
-<div class="answer-item mb-3">
+<div class="answer-item mb-3" id="answer-{{ answer.id }}">
     <div class="card-body p-4">
-
         <div class="d-flex gap-3">
             <div class="text-center">
-                <button class="btn btn-outline-light btn-sm">▲</button>
-                <div class="fw-bold my-2 text-white">5</div>
-                <button class="btn btn-outline-light btn-sm">▼</button>
+                <button class="btn btn-outline-light btn-sm" type="button" {% if not request.user.is_authenticated %}disabled title="Войдите, чтобы оценивать ответы"{% endif %}>▲</button>
+                <div class="fw-bold my-2 text-white">{{ answer.rating }}</div>
+                <button class="btn btn-outline-light btn-sm" type="button" {% if not request.user.is_authenticated %}disabled title="Войдите, чтобы оценивать ответы"{% endif %}>▼</button>
             </div>
 
-            <img title = "Gris" src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="40" height="40" alt="avatar">
+            <img title="{{ answer.author.username }}" src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="40" height="40" alt="avatar">
 
             <div class="flex-grow-1">
+                {% if answer.is_correct %}
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="badge text-bg-success">Принят</span>
+                    </div>
+                {% endif %}
 
-                <div class="d-flex align-items-center gap-2 mb-2">
-                    <span class="badge text-bg-success">Одобрено</span>
-                </div>
                 <p class="text-white-50 mb-2">
-                    Ответил 2 часа назад <strong class="text-white">Gris</strong>
+                    Ответил {{ answer.created_at|date:"d.m.Y H:i" }}
+                    <strong class="text-white">{{ answer.author.username }}</strong>
                 </p>
-                <p class="mb-0 text-white">First of all, you need to understand...</p>
+                <p class="mb-0 text-white">{{ answer.text }}</p>
             </div>
-
         </div>
-
     </div>
 </div>
