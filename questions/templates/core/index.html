@@ -1,20 +1,32 @@
-﻿{% extends 'layout/base.html' %}
+{% extends 'layout/base.html' %}
 {% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12 col-lg-8">
-        <div class="col-12 d-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 fw-bold mb-0">Вопросы</h1>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 fw-bold mb-0">
+        {% if tag_name %}
+            Вопросы по тегу: {{ tag_name }}
+        {% else %}
+            Вопросы
+        {% endif %}
+    </h1>
 
-            <a href="{% url 'questions:hot' %}" class="text-decoration-none text-white-50">
-                Горячие вопросы
-            </a>
-        </div>
-        {% for question in questions %}
-            {% include 'particles/card.html' %}
-        {% endfor %}
-
-        {% include 'particles/pagination.html' %}
+    <a href="{% url 'questions:hot' %}" class="text-decoration-none text-white-50">
+        Горячие вопросы
+    </a>
 </div>
+
+{% for question in questions %}
+    {% include 'particles/card.html' %}
+{% empty %}
+    {% if tag_name and not tag_exists %}
+        <p class="text-white-50">Такого тега пока нет.</p>
+    {% elif tag_name %}
+        <p class="text-white-50">По этому тегу пока нет ни одного вопроса.</p>
+    {% else %}
+        <p class="text-white-50">Пока нет ни одного вопроса.</p>
+    {% endif %}
+{% endfor %}
+
+{% include 'particles/pagination.html' %}
 {% endblock %}

@@ -1,42 +1,42 @@
-﻿{% extends 'layout/base.html' %}
-{% load static %}
+{% extends 'layout/base.html' %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-12 col-lg-7">
-        <div class="card bg-dark shadow-sm border-secondary">
-            <div class="card-body p-4">
-                <h1 class="h3 mb-3 text-white">Добро пожаловать</h1>
+<div class="card bg-dark shadow-sm border-secondary">
+    <div class="card-body p-4">
+        <h1 class="h3 mb-3 text-white">Войти</h1>
 
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label text-white-50">Почта</label>
-                        <input type="email"
-                               class="form-control bg-dark text-white border-secondary"
-                               placeholder="you@example.com"
-                               required minlength="5" maxlength="40">
-                    </div>
+        <form method="post" action="{% url 'core:login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
 
-                    <div class="mb-3">
-                        <label class="form-label text-white-50">Пароль</label>
-                        <input type="password"
-                               class="form-control bg-dark text-white border-secondary"
-                               required minlength="5" maxlength="100"
-                               placeholder="••••••••">
-                    </div>
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger py-2">{{ error }}</div>
+            {% endfor %}
 
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">Войти</button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-3">
-                    <a href="{% url 'core:signup' %}" class="text-white-50 text-decoration-none">
-                        Создать аккаунт
-                    </a>
-                </div>
-
+            <div class="mb-3">
+                <label class="form-label text-white-50" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                {{ form.username }}
+                {% for error in form.username.errors %}
+                    <div class="alert alert-danger py-2 mt-2">{{ error }}</div>
+                {% endfor %}
             </div>
+
+            <div class="mb-3">
+                <label class="form-label text-white-50" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {{ form.password }}
+                {% for error in form.password.errors %}
+                    <div class="alert alert-danger py-2 mt-2">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-success">Войти</button>
+            </div>
+        </form>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'core:signup' %}" class="text-white-50 text-decoration-none">Создать аккаунт</a>
         </div>
     </div>
+</div>
 {% endblock %}

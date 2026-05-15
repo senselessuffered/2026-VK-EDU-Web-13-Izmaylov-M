@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12 col-lg-8">
-        <div class="col-12 d-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 fw-bold mb-0">🔥 Горячие вопросы 🔥</h1>
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 fw-bold mb-0">Горячие вопросы</h1>
 
-            <a href="{% url 'questions:index' %}" class="text-decoration-none text-white-50">
-                Вопросы
-            </a>
-        </div>
-        {% for question in questions %}
-            {% include 'particles/card.html' %}
-        {% endfor %}
-
-        {% include 'particles/pagination.html' %}
+    <a href="{% url 'questions:index' %}" class="text-decoration-none text-white-50">
+        Вопросы
+    </a>
 </div>
+
+{% for question in questions %}
+    {% include 'particles/card.html' %}
+{% empty %}
+    <p class="text-white-50">Пока нет популярных вопросов.</p>
+{% endfor %}
+
+{% include 'particles/pagination.html' %}
 {% endblock %}

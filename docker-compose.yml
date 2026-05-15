@@ -1,7 +1,30 @@
 services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    env_file:
+      - .env.docker
+    environment:
+      POSTGRES_DB: ${DB_NAME:-askme}
+      POSTGRES_USER: ${DB_USER:-askme}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-askme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   web:
     build: .
+    env_file:
+      - .env.docker
+    environment:
+      ENV_FILE: .env.docker
     ports:
       - "8000:8000"
     volumes:
       - .:/app
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
