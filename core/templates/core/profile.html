@@ -1,9 +1,18 @@
 {% extends 'layout/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="card-dark">
     <div class="card-body p-4">
         <h1 class="h3 fw-bold mb-4">Профиль</h1>
+
+        <div class="text-center mb-4">
+            {% if request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" class="profile-avatar" alt="avatar">
+            {% else %}
+                <img src="{% static 'img/avatar-default.jpg' %}" class="profile-avatar" alt="avatar">
+            {% endif %}
+        </div>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}

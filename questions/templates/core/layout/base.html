@@ -25,7 +25,10 @@
         <div class="d-flex align-items-center ms-auto gap-2 flex-wrap">
             {% if request.user.is_authenticated %}
                 <a href="{% url 'questions:ask' %}" class="btn btn-gradient">Спросить</a>
-                <a href="{% url 'core:profile' %}" class="text-white text-decoration-none">{{ request.user.username }}</a>
+                <a href="{% url 'core:profile' %}" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                    {% include 'particles/avatar.html' with profile_user=request.user size=32 %}
+                    {{ request.user.username }}
+                </a>
                 <a href="{% url 'core:logout' %}" class="btn btn-outline-light">Выйти</a>
             {% else %}
                 <a href="{% url 'questions:ask' %}" class="btn btn-gradient disabled" title="Войдите, чтобы задать вопрос">Спросить</a>
@@ -100,5 +103,6 @@
 </footer>
 
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/ajax.js' %}"></script>
 </body>
 </html>

@@ -29,9 +29,6 @@ class Command(BaseCommand):
         if ratio <= 0:
             raise CommandError('ratio must be a positive integer')
 
-        fake = Faker('ru_RU')
-        batch_key = timezone.now().strftime('%Y%m%d%H%M%S')
-
         users_count = ratio
         tags_count = ratio
         questions_count = ratio * 10
@@ -44,6 +41,23 @@ class Command(BaseCommand):
                 f'Maximum is {max_likes_count}.'
             )
 
+        fake = Faker('ru_RU')
+        batch_key = timezone.now().strftime('%Y%m%d%H%M%S')
+
+        users = self.create_users(users_count, batch_key)
+        tags = self.create_tags(tags_count, questions_count, batch_key, fake)
+        questions = self.create_questions(questions_count, answers_count, users_count, tags_count, users, tags, fake)
+        answer_ids = self.create_answers(answers_count, questions_count, users_count, questions, users, fake)
+        self.create_likes(likes_count, questions_count, answers_count, users_count, questions, answer_ids, users)
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f'Created {users_count} users, {questions_count} questions, '
+                f'{answers_count} answers, {tags_count} tags and {likes_count} likes.'
+            )
+        )
+
+    def create_users(self, users_count, batch_key):
         self.stdout.write('Creating users...')
         users = User.objects.bulk_create(
             [
@@ -60,14 +74,16 @@ class Command(BaseCommand):
             [Profile(user=user) for user in users],
             batch_size=BATCH_SIZE,
         )
+        return users
 
+    def create_tags(self, tags_count, questions_count, batch_key, fake):
         self.stdout.write('Creating tags...')
         tag_question_counts = [0] * tags_count
         for i in range(questions_count):
             tag_question_counts[i % tags_count] += 1
             tag_question_counts[(i * 7 + 1) % tags_count] += 1
 
-        tags = Tag.objects.bulk_create(
+        return Tag.objects.bulk_create(
             [
                 Tag(name=f'{fake.word()}_{batch_key}_{i}', questions_count=tag_question_counts[i])
                 for i in range(tags_count)
@@ -75,6 +91,7 @@ class Command(BaseCommand):
             batch_size=BATCH_SIZE,
         )
 
+    def create_questions(self, questions_count, answers_count, users_count, tags_count, users, tags, fake):
         self.stdout.write('Creating questions...')
         question_answer_counts = [0] * questions_count
         for i in range(answers_count):
@@ -107,6 +124,9 @@ class Command(BaseCommand):
         for batch in batched(tag_links, BATCH_SIZE):
             through_model.objects.bulk_create(batch, batch_size=BATCH_SIZE, ignore_conflicts=True)
 
+        return questions
+
+    def create_answers(self, answers_count, questions_count, users_count, questions, users, fake):
         self.stdout.write('Creating answers...')
         answer_ids = []
         for start in range(0, answers_count, BATCH_SIZE):
@@ -123,7 +143,9 @@ class Command(BaseCommand):
             answer_ids.extend(
                 answer.id for answer in Answer.objects.bulk_create(batch, batch_size=BATCH_SIZE)
             )
+        return answer_ids
 
+    def create_likes(self, likes_count, questions_count, answers_count, users_count, questions, answer_ids, users):
         question_ids = [question.id for question in questions]
         user_ids = [user.id for user in users]
 
@@ -155,10 +177,3 @@ class Command(BaseCommand):
         )
         for batch in batched(answer_likes, BATCH_SIZE):
             AnswerLike.objects.bulk_create(batch, batch_size=BATCH_SIZE, ignore_conflicts=True)
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f'Created {users_count} users, {questions_count} questions, '
-                f'{answers_count} answers, {tags_count} tags and {likes_count} likes.'
-            )
-        )

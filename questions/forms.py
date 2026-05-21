@@ -3,6 +3,21 @@ from django import forms
 from .models import Answer, Question, Tag
 
 
+class VoteForm(forms.Form):
+    target_id = forms.IntegerField(min_value=1)
+    value = forms.IntegerField()
+
+    def clean_value(self):
+        value = self.cleaned_data['value']
+        if value not in (1, -1):
+            raise forms.ValidationError('value должен быть 1 или -1')
+        return value
+
+
+class CorrectAnswerForm(forms.Form):
+    answer_id = forms.IntegerField(min_value=1)
+
+
 class QuestionForm(forms.ModelForm):
     tags = forms.CharField(
         label='Теги',

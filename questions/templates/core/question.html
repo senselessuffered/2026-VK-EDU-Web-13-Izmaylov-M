@@ -5,7 +5,7 @@
 <div class="card-dark mb-4">
     <div class="card-body p-4">
         <div class="d-flex gap-3">
-            <img title="{{ question.author.username }}" src="{% static 'img/avatar-default.jpg' %}" class="rounded-circle" width="48" height="48" alt="avatar">
+            {% include 'particles/avatar.html' with profile_user=question.author size=48 %}
 
             <div class="flex-grow-1">
                 <h1 class="h4 mb-2 text-white">{{ question.title }}</h1>

@@ -1,5 +1,14 @@
+import os
+import uuid
+
 from django.contrib.auth.models import User
+from django.core.validators import FileExtensionValidator
 from django.db import models
+
+
+def avatar_upload_to(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    return f'avatars/{uuid.uuid4().hex}{ext}'
 
 
 class Profile(models.Model):
@@ -10,9 +19,10 @@ class Profile(models.Model):
         verbose_name='пользователь',
     )
     avatar = models.ImageField(
-        upload_to='avatars/',
+        upload_to=avatar_upload_to,
         blank=True,
         null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif', 'webp'])],
         verbose_name='аватар',
     )
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='создан')

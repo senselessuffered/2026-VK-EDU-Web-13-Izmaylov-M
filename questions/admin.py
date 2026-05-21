@@ -1,7 +1,7 @@
 from django.contrib import admin
+
 from .models import Answer, AnswerLike, Question, QuestionLike, Tag
 
-# Register your models here.
 
 class AnswerInline(admin.TabularInline):
     model = Answer
@@ -9,6 +9,7 @@ class AnswerInline(admin.TabularInline):
     raw_id_fields = ('author',)
     fields = ('author', 'text', 'is_correct', 'rating', 'created_at')
     readonly_fields = ('created_at',)
+
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):

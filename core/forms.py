@@ -1,3 +1,5 @@
+import os
+
 from django import forms
 from django.contrib.auth import authenticate, password_validation
 from django.contrib.auth.models import User
@@ -53,6 +55,9 @@ class SignupForm(forms.ModelForm):
 
 
 class ProfileForm(forms.ModelForm):
+    ALLOWED_AVATAR_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+    MAX_AVATAR_SIZE = 5 * 1024 * 1024
+
     avatar = forms.ImageField(label='Аватар', required=False, widget=forms.ClearableFileInput(attrs={'class': 'form-control bg-dark text-white border-secondary'}))
 
     class Meta:
@@ -72,10 +77,29 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['avatar'].initial = self.profile.avatar
 
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if not avatar or not hasattr(avatar, 'content_type'):
+            return avatar
+        ext = os.path.splitext(avatar.name)[1].lower()
+        if ext not in self.ALLOWED_AVATAR_EXTENSIONS:
+            raise forms.ValidationError('Допустимы только jpg, jpeg, png, gif, webp.')
+        if avatar.size > self.MAX_AVATAR_SIZE:
+            raise forms.ValidationError(f'Файл слишком большой (максимум {self.MAX_AVATAR_SIZE // 1024 // 1024} МБ).')
+        return avatar
+
     def save(self, commit=True):
         user = super().save(commit=commit)
         avatar = self.cleaned_data.get('avatar')
-        if avatar:
+        if avatar is False:
+            if self.profile.avatar:
+                self.profile.avatar.delete(save=False)
+            self.profile.avatar = None
+            if commit:
+                self.profile.save()
+        elif avatar and hasattr(avatar, 'content_type'):
+            if self.profile.avatar:
+                self.profile.avatar.delete(save=False)
             self.profile.avatar = avatar
             if commit:
                 self.profile.save()

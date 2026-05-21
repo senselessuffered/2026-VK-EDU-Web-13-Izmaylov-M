@@ -344,3 +344,16 @@ input[type="file"]::file-selector-button {
   font-size: 0.875rem;
   margin-top: 0.35rem;
 }
+
+.js-vote.active {
+  background-color: #3e7bbf;
+  border-color: #3e7bbf;
+  color: #fff !important;
+}
+
+.js-correct.active {
+  background-color: #198754;
+  border-color: #198754;
+  color: #fff !important;
+}
+

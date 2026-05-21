@@ -2,12 +2,15 @@ services:
   db:
     image: postgres:16
     restart: unless-stopped
-    env_file:
-      - .env.docker
     environment:
-      POSTGRES_DB: ${DB_NAME:-askme}
-      POSTGRES_USER: ${DB_USER:-askme}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-askme}
+      POSTGRES_DB: askme
+      POSTGRES_USER: askme
+      POSTGRES_PASSWORD: askme
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U askme"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -16,15 +19,25 @@ services:
   web:
     build: .
     env_file:
-      - .env.docker
+      - path: .env.docker
+        required: false
     environment:
-      ENV_FILE: .env.docker
+      SECRET_KEY: django-insecure-docker-dev-key
+      DEBUG: "True"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,web"
+      DB_ENGINE: django.db.backends.postgresql
+      DB_HOST: db
+      DB_NAME: askme
+      DB_USER: askme
+      DB_PASSWORD: askme
+      DB_PORT: "5432"
     ports:
       - "8000:8000"
     volumes:
       - .:/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:
