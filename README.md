@@ -158,3 +158,63 @@ Bootstrap без CDN, шаблоны `base.html`, `index.html`, `question.html`,
 **Email.** Уведомление автору вопроса о новом ответе шлётся в celery-таске `send_new_answer_email` через `django.core.mail.send_mail`. Параметры SMTP — в конфиге. Для разработки поднят `maildev` (SMTP `1025`, веб-интерфейс `1080`).
 
 **Полнотекстовый поиск.** Поиск по заголовку и тексту вопросов на полнотекстовом GIN-индексе PostgreSQL (`SearchVector('title', 'text', config='russian')`, миграция `0002`), а не `icontains`. Эндпоинт `GET /search/?q=` возвращает JSON-подсказки. В шапке — выпадающий список подсказок, запрос уходит по мере ввода с debounce и отменой предыдущего запроса (`core/static/js/search.js`).
+
+### ДЗ 7 — gunicorn, nginx, нагрузочное тестирование
+
+**Файлы:**
+- `gunicorn.conf.py` — конфиг gunicorn для Django (`127.0.0.1:8000`, 2 воркера);
+- `gunicorn_simple.conf.py` — конфиг для простого WSGI-скрипта (`127.0.0.1:8081`, 2 воркера);
+- `simple_wsgi.py` — самостоятельное WSGI-приложение без Django, печатает GET и POST параметры;
+- `nginx.conf` — конфиг nginx (46 строк): статика, `/uploads/`, gzip, кеш-заголовки, проксирование на gunicorn с `proxy_cache`;
+- `run_bench.sh` — скрипт запуска пяти замеров `ab`;
+- `benchmarks.md` — сводка результатов и ответы на вопросы.
+
+**Запуск.** Нужны три процесса (по одному в терминале), из корня проекта:
+
+```bash
+# 1) Django через gunicorn
+gunicorn -c gunicorn.conf.py application.wsgi:application
+
+# 2) Простой WSGI на 8081
+gunicorn -c gunicorn_simple.conf.py simple_wsgi:application
+
+# 3) nginx (prefix = корень репозитория, слушает :8080)
+nginx -p "$(pwd)" -c "$(pwd)/nginx.conf"
+# остановить:
+nginx -p "$(pwd)" -c "$(pwd)/nginx.conf" -s quit
+```
+
+`nginx.conf` написан с относительными путями (`core/static`, `media`, `bench/...`), поэтому
+нужен флаг `-p "$(pwd)"` — он задаёт префикс, относительно которого nginx разрешает все
+относительные пути. Слушает `:8080`, чтобы не требовать root.
+
+**Что куда отдаёт nginx:**
+- `/uploads/...` → `media/` (Django MEDIA_ROOT) — приоритетнее статики (`location ^~`);
+- `*.css|js|png|html|...` → `core/static/`;
+- всё остальное → проксируется на `http://127.0.0.1:8000` (Django gunicorn) с `proxy_cache`.
+
+Статус кеша виден в заголовке `X-Cache-Status` (`MISS` → `HIT` после первого запроса).
+
+**Проверка вручную:**
+
+```bash
+# простой wsgi: GET и POST параметры
+curl "http://localhost:8081/?a=1&b=2"
+curl -d "x=hello&y=world" http://localhost:8081/
+
+# nginx: статика
+curl -I http://localhost:8080/sample.html       # 200, Cache-Control: public
+
+# nginx: проксирование + кеш
+curl -I http://localhost:8080/                  # X-Cache-Status: MISS
+curl -I http://localhost:8080/                  # X-Cache-Status: HIT
+```
+
+**Нагрузочное тестирование.** При всех трёх запущенных процессах:
+
+```bash
+./run_bench.sh
+```
+
+Скрипт прогоняет `ab -n 1000 -c 10` по пяти сценариям, кладёт полные отчёты в
+`bench/ab_*.txt`. Итоговые числа и ответы на вопросы — в `benchmarks.md`.
