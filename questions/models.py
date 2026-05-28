@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector
 from django.db import models
 from django.urls import reverse
 
@@ -78,6 +80,12 @@ class Question(models.Model):
         verbose_name = 'вопрос'
         verbose_name_plural = 'вопросы'
         ordering = ['-created_at']
+        indexes = [
+            GinIndex(
+                SearchVector('title', 'text', config='russian'),
+                name='question_fts_gin',
+            ),
+        ]
 
     def __str__(self):
         return self.title
