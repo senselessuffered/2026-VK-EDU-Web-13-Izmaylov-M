@@ -1,0 +1,6 @@
+{% load static %}
+{% if profile_user.profile.avatar %}
+    <img src="{{ profile_user.profile.avatar.url }}" class="{{ css_class|default:'rounded-circle' }}" width="{{ size|default:40 }}" height="{{ size|default:40 }}" alt="avatar" title="{{ profile_user.username }}">
+{% else %}
+    <img src="{% static 'img/avatar-default.jpg' %}" class="{{ css_class|default:'rounded-circle' }}" width="{{ size|default:40 }}" height="{{ size|default:40 }}" alt="avatar" title="{{ profile_user.username }}">
+{% endif %}
