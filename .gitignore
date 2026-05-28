@@ -25,6 +25,4 @@ db.sqlite3
 !.env.example
 
 # Bench
-/bench/cache/
-/bench/*.pid
-/bench/*.log
+/bench/
