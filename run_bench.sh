@@ -35,9 +35,8 @@ run static_gunicorn    "$GUNI_DJANGO/static/sample.html"
 echo "3) Динамика напрямую через gunicorn (simple wsgi)"
 run dynamic_gunicorn   "$GUNI_SIMPLE/"
 
-echo "4) Динамика через nginx -> Django gunicorn (без кеша, /api-style URL)"
-
-run dynamic_nginx      "$NGINX/"
+echo "4) Динамика через nginx -> Django gunicorn (без кеша)"
+run dynamic_nginx      "$NGINX/nocache/"
 
 echo "5) Динамика через nginx с proxy_cache (после прогрева)"
 warmup_cache
