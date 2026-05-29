@@ -47,3 +47,8 @@ echo
 echo "Готово. Подробные отчёты ab - в каталоге $OUT/."
 echo "Сводку можно собрать так:"
 echo "  grep 'Requests per second' $OUT/ab_*.txt"
+echo ""
+echo "Команды запуска (из корня проекта):"
+echo "  gunicorn -c conf/gunicorn.conf.py application.wsgi:application"
+echo "  gunicorn -c conf/gunicorn_simple.conf.py simple_wsgi:application"
+echo "  nginx -p . -c conf/nginx.conf"
