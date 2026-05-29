@@ -42,6 +42,52 @@ docker compose exec web python manage.py fill_db 1000
 
 ---
 
+## Запуск под нагрузкой (gunicorn + nginx)
+
+`docker compose up` поднимает Django через `runserver` — это только для разработки. Под прод сценарий другой: Django крутится под `gunicorn`, статику и кеш динамики раздаёт `nginx`. Конфиги — в `conf/`.
+
+```bash
+# из корня репозитория, в трёх терминалах
+gunicorn -c conf/gunicorn.conf.py application.wsgi:application      # Django  :8000
+gunicorn -c conf/gunicorn_simple.conf.py simple_wsgi:application    # simple  :8081 (для бенчей)
+nginx -p "$(pwd)" -c "$(pwd)/conf/nginx.conf"                       # фронт   :8080
+```
+
+Сайт открывается на `http://localhost:8080/`. Остановить nginx: `nginx -p "$(pwd)" -c "$(pwd)/conf/nginx.conf" -s quit`.
+
+### Что поставить
+
+- `nginx` (системный пакет: `apt install nginx` / `brew install nginx`);
+- `python` + `pip install -r requirements.txt` (gunicorn уже в requirements);
+- запущенные `postgres` и `redis` (проще всего `docker compose up -d db redis`).
+
+### Что поменять под прод (MVP)
+
+**В `.env` (либо `.env.local` для локального gunicorn, либо системные переменные на сервере):**
+
+- `SECRET_KEY` — сгенерировать длинный случайный, не оставлять пример;
+- `DEBUG=False`;
+- `ALLOWED_HOSTS=askpupkin.local` (через запятую — все домены, под которыми сайт открывается);
+- `DB_PASSWORD` — сильный пароль (и тот же — в postgres);
+- `CENTRIFUGO_API_KEY`, `CENTRIFUGO_TOKEN_SECRET` — заменить тестовые на случайные секреты (и синхронно — в `centrifugo/config.json`);
+- `EMAIL_HOST`/`EMAIL_PORT`/`EMAIL_USE_TLS` — настоящий SMTP (не maildev);
+- `CENTRIFUGO_WS_URL=wss://askpupkin.local/connection/websocket` — если фронт ходит через nginx по TLS.
+
+**В локальном DNS** — чтобы открывать сайт по доменному имени, дописать в hosts-файл:
+
+```
+127.0.0.1   askpupkin.local
+```
+
+- Linux/Mac: `/etc/hosts`;
+- Windows: `C:\Windows\System32\drivers\etc\hosts` (редактор от администратора).
+
+**В `conf/nginx.conf`** для реального прода — заменить `server_name localhost` на доменное имя, добавить TLS-блок (порт `443` + `ssl_certificate`/`ssl_certificate_key`), а `runserver`-логику из `entrypoint.sh` заменить на `gunicorn` (либо запускать gunicorn вне Docker).
+
+После правок: `python manage.py migrate && python manage.py collectstatic --noinput`.
+
+---
+
 ## Локальный запуск (без Docker для Django)
 
 PostgreSQL удобно держать в Docker, а сам Django запускать с хоста:
@@ -162,10 +208,11 @@ Bootstrap без CDN, шаблоны `base.html`, `index.html`, `question.html`,
 ### ДЗ 7 — gunicorn, nginx, нагрузочное тестирование
 
 **Файлы:**
-- `gunicorn.conf.py` — конфиг gunicorn для Django (`127.0.0.1:8000`, 2 воркера);
-- `gunicorn_simple.conf.py` — конфиг для простого WSGI-скрипта (`127.0.0.1:8081`, 2 воркера);
+
+- `conf/gunicorn.conf.py` — конфиг gunicorn для Django (`127.0.0.1:8000`, 2 воркера);
+- `conf/gunicorn_simple.conf.py` — конфиг для простого WSGI-скрипта (`127.0.0.1:8081`, 2 воркера);
 - `simple_wsgi.py` — самостоятельное WSGI-приложение без Django, печатает GET и POST параметры;
-- `nginx.conf` — конфиг nginx (46 строк): статика, `/uploads/`, gzip, кеш-заголовки, проксирование на gunicorn с `proxy_cache`;
+- `conf/nginx.conf` — конфиг nginx (49 строк): статика, `/uploads/`, gzip, кеш-заголовки, проксирование на gunicorn с `proxy_cache`;
 - `run_bench.sh` — скрипт запуска пяти замеров `ab`;
 - `benchmarks.md` — сводка результатов и ответы на вопросы.
 
@@ -173,18 +220,18 @@ Bootstrap без CDN, шаблоны `base.html`, `index.html`, `question.html`,
 
 ```bash
 # 1) Django через gunicorn
-gunicorn -c gunicorn.conf.py application.wsgi:application
+gunicorn -c conf/gunicorn.conf.py application.wsgi:application
 
 # 2) Простой WSGI на 8081
-gunicorn -c gunicorn_simple.conf.py simple_wsgi:application
+gunicorn -c conf/gunicorn_simple.conf.py simple_wsgi:application
 
 # 3) nginx (prefix = корень репозитория, слушает :8080)
-nginx -p "$(pwd)" -c "$(pwd)/nginx.conf"
+nginx -p "$(pwd)" -c "$(pwd)/conf/nginx.conf"
 # остановить:
-nginx -p "$(pwd)" -c "$(pwd)/nginx.conf" -s quit
+nginx -p "$(pwd)" -c "$(pwd)/conf/nginx.conf" -s quit
 ```
 
-`nginx.conf` написан с относительными путями (`core/static`, `media`, `bench/...`), поэтому
+`conf/nginx.conf` написан с относительными путями (`core/static`, `media`, `bench/...`), поэтому
 нужен флаг `-p "$(pwd)"` — он задаёт префикс, относительно которого nginx разрешает все
 относительные пути. Слушает `:8080`, чтобы не требовать root.
 
