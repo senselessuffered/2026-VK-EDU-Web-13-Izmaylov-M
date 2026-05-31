@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from . import centrifugo, tasks
 from .forms import AnswerForm, CorrectAnswerForm, QuestionForm, VoteForm
 from .models import Answer, AnswerLike, Question, QuestionLike, Tag
-from .services import paginate
+from .services import annotate_user_votes, paginate
 
 SEARCH_SUGGESTIONS_LIMIT = 8
 
@@ -25,11 +25,13 @@ def ask(request):
 
 def index(request):
     page_obj = paginate(request, Question.objects.new())
+    annotate_user_votes(page_obj.object_list, request.user)
     return render(request, 'index.html', context={'questions': page_obj.object_list, 'page_obj': page_obj})
 
 
 def hot(request):
     page_obj = paginate(request, Question.objects.best())
+    annotate_user_votes(page_obj.object_list, request.user)
     return render(request, 'hot.html', context={'questions': page_obj.object_list, 'page_obj': page_obj})
 
 
@@ -83,6 +85,7 @@ def question(request, question_id):
 def tag(request, tag_name):
     tag_exists = Tag.objects.filter(name=tag_name).exists()
     page_obj = paginate(request, Question.objects.by_tag(tag_name))
+    annotate_user_votes(page_obj.object_list, request.user)
     return render(request, 'index.html', context={'tag_name': tag_name, 'tag_exists': tag_exists, 'questions': page_obj.object_list, 'page_obj': page_obj})
 
 
@@ -105,12 +108,14 @@ def vote_question(request):
 
     if created:
         delta = value
-    elif like.value != value:
+    elif like.value == value:
+        like.delete()
+        delta = -value
+        value = 0
+    else:
         delta = value - like.value
         like.value = value
         like.save(update_fields=['value'])
-    else:
-        delta = 0
 
     if delta:
         Question.objects.filter(pk=question.pk).update(rating=F('rating') + delta)
@@ -138,12 +143,14 @@ def vote_answer(request):
 
     if created:
         delta = value
-    elif like.value != value:
+    elif like.value == value:
+        like.delete()
+        delta = -value
+        value = 0
+    else:
         delta = value - like.value
         like.value = value
         like.save(update_fields=['value'])
-    else:
-        delta = 0
 
     if delta:
         Answer.objects.filter(pk=answer.pk).update(rating=F('rating') + delta)

@@ -9,7 +9,7 @@ from django.db.models import Count, Q, Sum
 from django.templatetags.static import static
 from django.utils import timezone
 
-from .models import Answer, Question, Tag
+from .models import Answer, Question, QuestionLike, Tag
 
 POPULAR_TAGS_LIMIT = 10
 POPULAR_TAGS_PERIOD_DAYS = 90
@@ -21,6 +21,20 @@ BEST_MEMBERS_PERIOD_DAYS = 7
 def paginate(request, objects, per_page=10):
     paginator = Paginator(objects, per_page)
     return paginator.get_page(request.GET.get('page'))
+
+
+def annotate_user_votes(questions, user):
+    if user.is_authenticated:
+        votes = dict(
+            QuestionLike.objects
+            .filter(question__in=questions, user=user)
+            .values_list('question_id', 'value')
+        )
+    else:
+        votes = {}
+    for question in questions:
+        question.user_vote = votes.get(question.id, 0)
+    return questions
 
 
 def compute_popular_tags():
