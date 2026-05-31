@@ -30,7 +30,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
-DEBUG_TOOLBAR_ENABLED = DEBUG and find_spec('debug_toolbar') is not None
+DEBUG_TOOLBAR_ENABLED = (
+    DEBUG
+    and os.getenv("DEBUG_TOOLBAR", "True") == "True"
+    and find_spec('debug_toolbar') is not None
+)
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
