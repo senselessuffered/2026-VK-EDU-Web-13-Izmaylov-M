@@ -152,8 +152,6 @@ main {
   transition: all 0.2s ease;
 }
 
-/* Simplified component classes */
-
 .card-dark {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -345,9 +343,9 @@ input[type="file"]::file-selector-button {
   margin-top: 0.35rem;
 }
 
-.js-vote.active {
-  background-color: #3e7bbf;
-  border-color: #3e7bbf;
+.btn-outline-light.js-vote.active {
+  background-color: #3e7bbf !important;
+  border-color: #3e7bbf !important;
   color: #fff !important;
 }
 
