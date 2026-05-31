@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'core',
     'questions',
 ]
@@ -155,3 +156,87 @@ if DEBUG_TOOLBAR_ENABLED:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
     }
+
+
+# Redis
+
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = os.getenv('REDIS_PORT', '6379')
+REDIS_CACHE_DB = os.getenv('REDIS_CACHE_DB', '1')
+REDIS_BROKER_DB = os.getenv('REDIS_BROKER_DB', '2')
+REDIS_BEAT_DB = os.getenv('REDIS_BEAT_DB', '3')
+
+
+# Caching
+# https://docs.djangoproject.com/en/6.0/topics/cache/
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CACHE_DB}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'IGNORE_EXCEPTIONS': True,
+        },
+        'TIMEOUT': 60 * 10,
+    }
+}
+
+DJANGO_REDIS_IGNORE_EXCEPTIONS = True
+DJANGO_REDIS_LOG_IGNORED_EXCEPTIONS = True
+
+
+# Celery
+# https://docs.celeryq.dev/en/stable/django/first-steps-with-django.html
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BROKER_DB}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}'
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_BEAT_SCHEDULER = 'redbeat.RedBeatScheduler'
+CELERY_REDBEAT_REDIS_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_BEAT_DB}'
+
+POPULAR_TAGS_REFRESH_SECONDS = int(os.getenv('POPULAR_TAGS_REFRESH_SECONDS', str(60 * 10)))
+BEST_MEMBERS_REFRESH_SECONDS = int(os.getenv('BEST_MEMBERS_REFRESH_SECONDS', str(60 * 10)))
+
+CELERY_BEAT_SCHEDULE = {
+    'refresh-popular-tags': {
+        'task': 'questions.tasks.refresh_popular_tags',
+        'schedule': POPULAR_TAGS_REFRESH_SECONDS,
+    },
+    'refresh-best-members': {
+        'task': 'questions.tasks.refresh_best_members',
+        'schedule': BEST_MEMBERS_REFRESH_SECONDS,
+    },
+}
+
+CACHE_KEY_POPULAR_TAGS = 'sidebar:popular_tags'
+CACHE_KEY_BEST_MEMBERS = 'sidebar:best_members'
+SIDEBAR_CACHE_TIMEOUT = int(os.getenv('SIDEBAR_CACHE_TIMEOUT', str(60 * 30)))
+
+
+# Email
+# https://docs.djangoproject.com/en/6.0/topics/email/
+
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '1025'))
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'AskPupkin <noreply@askpupkin.local>')
+
+
+# Centrifugo (websocket real-time)
+
+CENTRIFUGO_API_URL = os.getenv('CENTRIFUGO_API_URL', 'http://localhost:8001')
+CENTRIFUGO_API_KEY = os.getenv('CENTRIFUGO_API_KEY', 'askpupkin-api-key')
+CENTRIFUGO_TOKEN_SECRET = os.getenv('CENTRIFUGO_TOKEN_SECRET', 'askpupkin-token-secret')
+CENTRIFUGO_NAMESPACE = os.getenv('CENTRIFUGO_NAMESPACE', 'questions')
+CENTRIFUGO_WS_URL = os.getenv('CENTRIFUGO_WS_URL', 'ws://localhost:8001/connection/websocket')
+CENTRIFUGO_TOKEN_TTL = int(os.getenv('CENTRIFUGO_TOKEN_TTL', str(60 * 60 * 12)))

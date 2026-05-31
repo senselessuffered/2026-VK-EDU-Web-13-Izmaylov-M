@@ -18,7 +18,7 @@ db.sqlite3
 # Logs
 *.log
 
-# Env (секреты не коммитим, в репозитории остаётся только .env.example)
+# Env
 .env
 .env.local
 .env.docker

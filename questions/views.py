@@ -1,12 +1,17 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from . import centrifugo, tasks
 from .forms import AnswerForm, CorrectAnswerForm, QuestionForm, VoteForm
 from .models import Answer, AnswerLike, Question, QuestionLike, Tag
 from .services import paginate
+
+SEARCH_SUGGESTIONS_LIMIT = 8
 
 
 @login_required(login_url='core:login')
@@ -35,6 +40,8 @@ def question(request, question_id):
         answer_form = AnswerForm(request.POST or None, author=request.user, question=question)
         if request.method == 'POST' and answer_form.is_valid():
             answer = answer_form.save()
+            tasks.publish_new_answer.delay(answer.id)
+            tasks.send_new_answer_email.delay(answer.id)
             page = Answer.objects.for_question(question).filter(rating__gt=answer.rating).count() // 4 + 1
             return redirect(f'{question.get_absolute_url()}?page={page}#answer-{answer.id}')
     page_obj = paginate(request, Answer.objects.for_question(question), per_page=4)
@@ -57,6 +64,7 @@ def question(request, question_id):
         for answer in page_obj.object_list:
             answer.user_vote = 0
 
+    user_id = request.user.id if request.user.is_authenticated else None
     return render(request, 'question.html', context={
         'question': question,
         'answers': page_obj.object_list,
@@ -64,6 +72,11 @@ def question(request, question_id):
         'answer_form': answer_form,
         'user_question_vote': user_question_vote,
         'is_question_author': request.user.is_authenticated and request.user.id == question.author_id,
+        'centrifugo_ws_url': settings.CENTRIFUGO_WS_URL,
+        'centrifugo_token': centrifugo.generate_connection_token(user_id),
+        'centrifugo_channel': centrifugo.channel_for_question(question.id),
+        'current_user_id': user_id or 0,
+        'is_first_page': page_obj.number == 1,
     })
 
 
@@ -157,3 +170,29 @@ def mark_correct(request):
     answer.save(update_fields=['is_correct'])
 
     return JsonResponse({'is_correct': answer.is_correct})
+
+
+def search(request):
+    query_text = (request.GET.get('q') or '').strip()
+    if len(query_text) < 2:
+        return JsonResponse({'results': []})
+
+    vector = SearchVector('title', 'text', config='russian')
+    search_query = SearchQuery(query_text, config='russian')
+    questions = (
+        Question.objects
+        .annotate(search=vector, rank=SearchRank(vector, search_query))
+        .filter(search=search_query)
+        .order_by('-rank', '-rating')[:SEARCH_SUGGESTIONS_LIMIT]
+    )
+
+    results = [
+        {
+            'id': question.id,
+            'title': question.title,
+            'url': question.get_absolute_url(),
+            'answers_count': question.answers_count,
+        }
+        for question in questions
+    ]
+    return JsonResponse({'results': results})

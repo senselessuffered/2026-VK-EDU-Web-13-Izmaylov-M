@@ -1,0 +1,18 @@
+<div class="card-dark">
+    <div class="card-header-dark">
+        <h5 class="text-white mb-0">Лучшие участники</h5>
+    </div>
+    <div class="card-body">
+        {% for member in members %}
+            <div class="user-item">
+                <img src="{{ member.avatar_url }}" class="rounded-circle me-3" width="40" height="40" alt="avatar">
+                <div>
+                    <div class="fw-semibold text-white">{{ member.username }}</div>
+                    <small class="text-white-50">{{ member.points }} points</small>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-white-50 mb-0">Пока нет лучших участников.</p>
+        {% endfor %}
+    </div>
+</div>

@@ -33,11 +33,21 @@
 
 <h2 class="h5 mb-3">Ответы</h2>
 
-{% for answer in answers %}
-    {% include 'particles/answer.html' %}
-{% empty %}
-    <p class="text-white-50">Пока нет ни одного ответа к этому вопросу.</p>
-{% endfor %}
+<div id="realtime-config"
+     data-ws-url="{{ centrifugo_ws_url }}"
+     data-token="{{ centrifugo_token }}"
+     data-channel="{{ centrifugo_channel }}"
+     data-user-id="{{ current_user_id }}"
+     data-first-page="{% if is_first_page %}true{% else %}false{% endif %}"
+     hidden></div>
+
+<div id="answers-list">
+    {% for answer in answers %}
+        {% include 'particles/answer.html' %}
+    {% empty %}
+        <p id="no-answers" class="text-white-50">Пока нет ни одного ответа к этому вопросу.</p>
+    {% endfor %}
+</div>
 
 {% include 'particles/pagination.html' %}
 
@@ -76,4 +86,9 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/centrifuge@5/dist/centrifuge.js"></script>
+<script src="{% static 'js/realtime.js' %}"></script>
 {% endblock %}

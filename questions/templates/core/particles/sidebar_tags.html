@@ -1,0 +1,16 @@
+<div class="card-dark mb-4">
+    <div class="card-header-dark">
+        <h5 class="mb-0 text-white">Популярные теги</h5>
+    </div>
+    <div class="card-body">
+        <div class="tags-container">
+            {% for tag in tags %}
+                <a href="{% url 'questions:tag' tag.name %}"
+                   class="badge text-bg-primary text-decoration-none"
+                   title="{{ tag.count }} вопрос(ов) за 3 месяца">{{ tag.name }}</a>
+            {% empty %}
+                <span class="text-white-50">Пока нет популярных тегов.</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
