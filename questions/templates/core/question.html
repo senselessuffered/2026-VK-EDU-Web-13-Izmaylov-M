@@ -5,6 +5,19 @@
 <div class="card-dark mb-4">
     <div class="card-body p-4">
         <div class="d-flex gap-3">
+            <div class="text-center js-vote-group"
+                 data-vote-target="{{ question.id }}"
+                 data-vote-url="{% url 'questions:vote_question' %}"
+                 data-login-url="{% url 'core:login' %}?next={{ request.path }}">
+                <button class="btn btn-outline-light btn-sm js-vote{% if user_question_vote == 1 %} active{% endif %}"
+                        type="button" data-value="1"
+                        {% if not request.user.is_authenticated %}disabled title="Войдите, чтобы оценивать вопросы"{% endif %}>▲</button>
+                <div class="fw-bold text-white my-2 js-rating">{{ question.rating }}</div>
+                <button class="btn btn-outline-light btn-sm js-vote{% if user_question_vote == -1 %} active{% endif %}"
+                        type="button" data-value="-1"
+                        {% if not request.user.is_authenticated %}disabled title="Войдите, чтобы оценивать вопросы"{% endif %}>▼</button>
+            </div>
+
             {% include 'particles/avatar.html' with profile_user=question.author size=48 %}
 
             <div class="flex-grow-1">
