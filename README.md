@@ -61,7 +61,7 @@ nginx -p "$(pwd)" -c "$(pwd)/conf/nginx.conf"                       # фронт
 - `python` + `pip install -r requirements.txt` (gunicorn уже в requirements);
 - запущенные `postgres` и `redis` (проще всего `docker compose up -d db redis`).
 
-### Что поменять под прод (MVP)
+### Что поменять под прод
 
 **В `.env` (либо `.env.local` для локального gunicorn, либо системные переменные на сервере):**
 
